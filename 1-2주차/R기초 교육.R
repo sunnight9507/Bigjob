@@ -395,6 +395,259 @@ scatter + geom_point(aes(color=Species, shape=Species)) +
 View(iris)
 
 
+############### 4. 일변량자료탐색 ###############
+
+### 1) 자료의 종류
+# 통계 기법은 자료를 정리하고 분석할 수 있는 강력한 수단
+# 데이터 분석에서도 많은 부분에서 통계적 기법을 필요로 한다.
+
+## 자료의 종류
+# 질적 자료(범주형 자료)
+# - 원칙적으로 숫자로 표시될 수 없는 자료
+# ex) 교육수준 : 초졸, 중졸, 고졸 / 성별 : M, F
+
+# 양적 자료(연속형 자료)
+# - 자료 자체가 크기가 있는 숫자로 표현됨
+# 이산자료 : 정수값을 취할 수 있는 자료(각 세대의 자녀 수)
+# 연속자료 : 실수 값을 취할 수 있는 자료(키, 몸무게, 온도)
+
+## 일변량 자료
+# 분석대상이 되는 변수의 개수가 1개
+# ex) 단국대 학생들의 몸무게 분포를 분석
+# vector에 저장하여 분석
+
+## 다변량 자료
+# 분석대상이 되는 변수의 개수가 2개 이상인 경우
+# 변수가 2개인 경우를 특별히 이변량 자료라고함
+# ex) 출생 지역과 몸무게가 상관관계가 있는지 분석
+# matrix, data frame에 저장해 분석
+
+### 2) 일변량 질적자료의 분석
+
+## 도수분포표 작성
+ans=c("Y","Y","N","Y","Y") 
+table(ans) # 도수분포표 출력
+table(ans)/length(ans) # 비율 출력
+
+## 막대그래프 작성
+favorite.color <- c("red", "green", "yellow", "red", "green", "red", "red")
+sum <- table(favorite.color) # 도수분포표
+sum
+barplot(sum, main="Favorite color")
+
+## 막대그래프 사례
+head(mtcars)              # 자동차 모델별 제원
+carb <- mtcars[,"carb"]   # 기화기 수
+table(carb)               # 도수분포표
+barplot(table(carb), 
+        main="Barplot of Carburetors",
+        xlab="#of carburetors",  
+        ylab="frequency")
+# table() : 주어진 자료로부터 도수 분포표를 그려준다.
+
+## barplot() 매개변수
+# angle, density, col : 막대를 칠하는 선분의 각도, 선분의 수, 선분의 색 지정
+# legend : 오른쪽 상단에 범례추가
+# names : 각 막대의 라벨을 정하는 문자열 벡터를 지정
+# width : 각 막대의 상대적인 폭을 벡터로 지정
+# space : 각 막대 사이의 간격을 지정
+# beside : TRUE를 지정하면 각각의 값마다 막대를 그림
+# horiz : TRUE를 지정하면 막대를 옆으로 눞혀서 그림
+
+## 한 화면에 그래프 여러 개 그리기
+par(mfrow=c(1,3)) # 1x3 윈도우 생성
+barplot(table(mtcars$carb), 
+        main="Barplot of Carburetors",
+        xlab="#of carburetors",  
+        ylab="frequency",
+        col="blue")
+barplot(table(mtcars$cyl), 
+        main="Barplot of Cylender",
+        xlab="#of cylender",  
+        ylab="frequency",
+        col="red")
+barplot(table(mtcars$gear), 
+        main="Barplot of Grar",
+        xlab="#of gears",  
+        ylab="frequency",
+        col="green")
+
+# 다양한 막대 그래프 예제
+# http://www.theanalysisfactor.com/r-11-bar-charts/
+# R 에서 지원하는 color 이름
+# http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf
+
+## 원 그래프 작성
+favorite.color <- c("red", "green", "yellow", "red", "green", "red", "red")
+sum <- table(favorite.color ) # 도수분포표
+pie(sum, main="Favorite color")
+
+
+### 3) 일변량 양적 자료의 분석
+# 양적자료는 질적자료에 비해 분석 방법이 많다.
+# ex) 평균, 중앙값, 4분위수, 분산, Boxplot, Histogram, 나무-잎 그림
+
+## 평균
+# 균형점, 무게중심
+
+## 중앙값
+# 어떤 주어진 값들을 정렬했을 때 가장 중앙에 위치하는 값을 의미
+
+## 절사평균
+# 표본중에서 작은값 N%와 큰값 N%를 제외하고 나머지 (100-2N)%의 자료만 사용하여 구한 평균
+
+
+## 4분위수
+# 측정값을 4등분하는 백분위수
+# 제 1사분위수(Q1) : 제 25백분위수
+# 제 2사분위수(Q2) : 제 50백분위수, 중앙값
+# 제 3사분위수(Q3) : 제 75백분위수
+mydata = c(50,60,100,75,200)
+mydata.big = c(mydata, 50000)
+mean(mydata) # 평균 
+mean(mydata.big)
+median(mydata) # 중앙값 
+median(mydata.big)
+mean(mydata, trim=0.2) # 절사평균   
+mean(mydata.big, trim=0.2)
+quantile(mydata) # 사분위수 
+quantile(mydata, (0:10)/10)
+summary(mydata)
+fivenum(mydata) # quantile()과 비슷
+
+## 산포
+# 데이터가 퍼져 있는 정도, 흩어져 있는 정도
+# 분산과 표준편차를 가지고 표현
+diff(range(mydata))    # 최대값-최소값
+var(mydata)            # 분산
+sd(mydata)             # 표준편차
+
+## Box plot
+# 전차 자료의 50%가 위치하는 범위 : Box
+# 중앙값 : Box 안 실선
+# 정상범위 밖에 존재하는 데이터 표시. 이상치. 특이값(outlier)
+# 이상치를 제외한 값중 최소, 최대값
+head(state.x77)
+st.income <- state.x77[,"Income"] 
+boxplot(st.income, ylab="Income value")
+
+# 데이터에 그룹이 있는 경우
+boxplot(Petal.Width~Species,data=iris,
+        ylab="Petal.Width")
+
+## 히스토그램
+# 막대 그래프는 도수 분포표를 만들 수 있는 정수형, 문자형 자료의 경우에 사용하고,
+# 실수형 자료에 대해서는 히스토그램을 사용한다.
+st.income <- state.x77[,"Income"] 
+hist(st.income,                      # data
+     main="Histogram for Income",    # 제목
+     xlab ="income",    # x축 레이블              
+     ylab="frequency",  # y축 레이블                     
+     border="blue",     # 막대 테두리색  
+     col="green",       # 막대 색
+     las=2,             # x축 글씨방향(0~3) 
+     breaks=5)          # x축 막대 개수 조절 
+
+## 줄기-잎 그림
+score <- c(40,55,90,75,59,60,63,65,69,71)
+stem(score, scale=2)
+
+############### 5. 다변량 자료의 탐색 ###############
+
+## 개요
+# 다변량 자료
+# - 키와 몸무게의 관계와 같이 두 개 이상의 변수를 동시에 다루어야 하는 자료
+# - 두 개인 경우를 특히 이변량 자료라고 한다.
+# - 일변량 자료는 vector에 저장하여 분석할 수 있고, 다변량 자료는 matrix 또는 data frame에 저장해 분석
+# 키, 몸무게 : 변수
+# 변수는 데이터셋에서 열로 표현된다.
+
+### 1) 산점도
+# 이변량 자료의 분포 및 상관관계를 시각적으로 확인
+wt <-mtcars$wt
+mpg <- mtcars$mpg
+plot(wt, mpg,                  # 2개 변수(x축,y축)     
+     main="Car Weight-mpg",    # 제목
+     xlab="Car Weight ",       # x축 레이블
+     ylab="Miles Per Gallon ", # y축 레이블
+     col="red",                # point 의 color
+     pch=19)                   # point 의 종류  
+
+## 옵션
+# main='메인제목' : 제목 설정
+# sub='서브제목' : 서브제목 설정
+# xlab='문자', ylab='문자' : x,y축에 사용할 문자열을 지정
+# ann=F : x, y축 제목을 지정하지 않음
+# tmag = 2 : 제목 등에 사용되는 문자의 확대률 지정
+# axes = F : x, y축을 표시하지 않음
+# axis : x, y 축을 사용자의 지정값으로 표시
+
+## 그래프 타입 선택
+# type = 'p' : 점 모양(기본값)
+# 'i' : 선 모양 그래프(꺾은선 그래프)
+# 'b' : 점과 선 모양 그래프
+# 'c' : 'b'에서 점을 생략한 모양
+# 'o' : 점과 선을 중첩해서 그린 그래프
+# 'h' : 각 점에서 x축 까지의 수직선 그래프
+# 's' : 왼쪽값을 기초로 계단 모양으로 연결한 그래프
+# 'S' : 오른쪽 값을 기초로 계단모양으로 연결한 그래프
+# 'n' : 축만 그리고 그래프는 그리지 않음
+
+## 선의 모양 선택
+## 색, 기호 등
+## 포인트의 종류
+
+# pairs() : 여러 변수들 사이의 상관관계를 한번에 확인
+vars <- c("mpg","disp","drat","wt") # 대상 변수 
+target <- mtcars[,vars]
+pairs(target, # 대상 데이터     
+      main="Multi plots")
+
+## 그룹 정보가 있는 2변량 데이터의 분포 보기
+iris.2 <- iris[,3:4]              # 데이터
+point <- as.numeric(iris$Species) # 포인트 모양
+color <- c("red","green","blue")  # 포인트 컬러
+plot(iris.2, 
+     main="Iris plot",
+     pch=c(point),
+     col=color[point])
+
+### 2) 상관 분석
+# 두 변수 X와 Y간의 선형성의 정도를 측정하는 통계량
+
+## 특징
+# 
+
+### 3) 선 그래프
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
