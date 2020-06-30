@@ -616,52 +616,543 @@ plot(iris.2,
 # 두 변수 X와 Y간의 선형성의 정도를 측정하는 통계량
 
 ## 특징
-# 
+# -1 <= r <= 1
+# r > 0 : 양의 상관 관계
+# r < 0 : 음의 상관 관계
+# 1이나 -1에 가까울수록 상관성이 높다.
+
+# 음주 정도와 혈중 알코올 농도의 상관도 분석
+beers = c(5,2,9,8,3,7,3,5,3,5)
+bal = c(0.1,0.03,0.19,0.12,0.04,0.0095,0.07,
+        0.06,0.02,0.05)
+# data.frame : 데이터를 테이블 형태로 관리
+# cbind() : 두 벡터를 컬럼(열) 방향으로 합친다. / rbind() : 행 방향
+tbl = data.frame(cbind(beers,bal))
+
+# 두 벡터 데이터를 가지고 산점도를 그린다.
+# plot(tbl), plot(tbl[,1], tbl[,2])도 동일한 결과 도출
+tbl; class(tbl) 
+plot(bal~beers,data=tbl)   # 산점도 
+
+# 산점도를 가장 잘 표현할 수 있는 선형 모델을 구한다.
+res=lm(bal~beers,data=tbl) # 회귀식 도출
+
+# 구한 선형모델을 가지고 산점도 위에 선을 그린다.
+abline(res) # 회귀선그리기
+
+# 두 벡터자료로부터 상관계수를 계산한다.
+cor(beers,bal) # 상관성 분석 시행
+
+## 여러 변수들간의 상관 계수를 동시에 구하는 방법
+cor(iris[,1:4])
+
 
 ### 3) 선 그래프
+# 연도별 인구 증감 추이와 같이 시간 순서에 따른 데이터의 시각화에 많이 사용됨
+month = 1:12
+late = c(5,8,7,9,4,6,12,13,8,6,6,4)
+
+plot(month,             # x data
+     late,              # y data
+     main="Late students",
+     type= "h",         # 그래프의 종류 선택(알파벳). 
+     lty=1,             # 선의 종류(line type) 선택
+     lwd=1,             # 선의 굵기 선택
+     xlab="Month ",     # x축 레이블
+     ylab="Late cnt"    # y축 레이블
+)
+
+# type
+# 1 - 6 : 선
+# b : 점과 선
+# s : 계단 형
+# S : 계단 형2
+# o : 점 위의 선
+# h : 값에 해당하는 수직선
+
+## 복수의 선 그래프
+month = 1:12
+late1  = c(5,8,7,9,4,6,12,13,8,6,6,4)
+late2  = c(4,6,5,8,7,8,10,11,6,5,7,3)
+
+plot(month,             # x data
+     late1,              # y data
+     main="Late students",
+     type= "b",         # 그래프의 종류 선택(알파벳). 
+     lty=1,                            # 선의 종류(line type) 선택
+     col="red",          # 선의 색깔 선택          
+     xlab="Month ",      # x축 레이블
+     ylab="Late cnt"     # y축 레이블
+)
+lines(month,             
+      late2, 
+      type = "b", 
+      col = "blue")
+
+# 하나의 선그래프를 그린 후 그 위에 또 다른 선 그래프를 겹쳐 그리는 방식
 
 
+############### 6. 데이터 분석 사례 ###############
+
+### 1) 데이터셋 일반정보
+## Step 1) 데이터셋 일반 정보
+str(iris)
+
+class(iris)               #자료구조 확인
+head(iris)
+dim(iris)
+table(iris$Species)
+
+## 해석
+# 자료구조는 data frame
+# 앞 4개는 수치 5번째는 그룹 정보 포함
+# 총 150개의 행과 5개읠 열로 구성
+# 각 행들은 3개의 그룹 중 하나
+# 각 그룹에 속한 행의 개수는 각각 50개씩 균등
+
+## Step 2) 4개 열 데이터에 대한 데이터 분포 확인
+summary(iris[,1])
+summary(iris[,2])
+summary(iris[,"Petal.Length"])
+summary(iris$Petal.Width)
+
+sd(iris[,1])  # Sepal.Length 
+sd(iris[,2])  # Sepal.Width 
+sd(iris[,3])  # Petal.Length 
+sd(iris[,4])  # Petal.Width 
+
+# Histogram으로 분포 확인
+par(mfrow=c(2,2))         # 2x2 윈도우 생성
+
+hist(iris[,1],                  # data
+     main=colnames(iris)[1],    # 제목
+     xlab ="Length",    # x축 레이블              
+     ylab="Count",      # y축 레이블                     
+     col="green",       # 막대 색
+     las=2,             # x축 글씨방향(0~3) 
+     breaks=10)         # x축 막대 개수 조절 
+
+hist(iris[,2],                  # data
+     main=colnames(iris)[2],    # 제목
+     xlab ="Length",    # x축 레이블              
+     ylab="Count",      # y축 레이블                     
+     col="yellow",      # 막대 색
+     las=2,             # x축 글씨방향(0~3) 
+     breaks=10)         # x축 막대 개수 조절 
+
+hist(iris[,3],                  # data
+     main=colnames(iris)[3],    # 제목
+     xlab ="Length",    # x축 레이블              
+     ylab="Count",      # y축 레이블                     
+     col="blue",        # 막대 색
+     las=2,             # x축 글씨방향(0~3) 
+     breaks=10)         # x축 막대 개수 조절 
+
+hist(iris[,4],                  # data
+     main=colnames(iris)[4],    # 제목
+     xlab ="Length",    # x축 레이블              
+     ylab="Count",      # y축 레이블                     
+     col="red",         # 막대 색
+     las=2,             # x축 글씨방향(0~3) 
+     breaks=10)         # x축 막대 개수 조절 
+
+# Step 3) 각 열 데이터에 대해 그룹별 분포를 확인
+par(mfrow = c(2, 2))
+boxplot(Sepal.Length~Species, data = iris, 
+        main = "Sepal.Length")
+boxplot(Sepal.Width~Species, data = iris, 
+        main = "Sepal.Width")  
+boxplot(Petal.Length~Species, data = iris, 
+        main = "Petal.Length")  
+boxplot(Petal.Length~Species, data = iris, 
+        main = "Petal.Width") 
+
+# Step 4) 각 열 데이터에 대해 그룹별 분폴르 산점도를 통해 확인
+point <- as.numeric(iris$Species) # 포인트 모양
+color <- c("red","green","blue")  # 포인트 컬러
+pairs(iris[,-5], 
+      pch=c(point),
+      col=color[iris[,5]]  
+)
+
+# 변수간 상관도를 확인
+cor(iris[,-5])
+
+############### 7. R 프로그래밍 ###############
+
+### 1) if 문
+# if (logical expression) {
+#   statements
+# } else {
+#   alternative statements
+# }
+a <- 10
+if (a>5){
+  print (a)
+} else {
+  print (a*10)
+  print (a/10)
+}
+
+a <- 10
+b <- 20
+if (a>5 & b>5){           # and
+  print (a+b)
+}
+if (a>5 | b>30){          # or
+  print (a*b)
+}
+
+a <- 10
+b <- 20
+ifelse (a>b, c<-a, c<-b)
+c
+
+### 2) 반복문(for, while)
+## for
+for(i in 1:10) {
+  print(i)
+}
+
+for(i in 1:10) {
+  cat("2*",i,"=",2*i,"\n") 
+}
+
+for(i in 1:10) {
+  if(i%%2==0) {          # 짝수인지 확인
+    print(i)
+  } 
+}
+
+v1 <- 101:130
+for(i in 1:length(v1)) {
+  if(v1[i]%%2==0) {
+    print(v1[i]*2)
+  } else {
+    print(v1[i]+2)
+  } 
+}
+
+sum <- 0
+for(i in 1:100) {
+  sum <- sum + i
+}
+print(sum)
+
+## while
+i<-1
+while(i <= 10) {
+  print(i)
+  i <- i+1
+}
+
+### 3) 사용자 정의 함수
+
+mymax <- function(x,y) {
+  num.max <- x
+  if (y > x) {
+    num.max <- y
+  }
+  return(num.max) 
+}
+
+mymax(10,15)
+mymax(20,15)
 
 
+mydiv <- function(x,y=2) {
+  result <- x/y
+  return(result)
+}
+
+mydiv(x=10,y=3) 
+mydiv(10,3)
+mydiv(10)
 
 
+myfunc <- function(x,y) {
+  val.sum <- x+y
+  val.mul <- x*y 
+  return(list(sum=val.sum, mul=val.mul)) 
+}
+
+result <- myfunc(5,8) 
+result$sum
+result$mul
 
 
+### 4) apply 계열 함수
+# R 프로그램이에서는 for, while을 사용하지 않는 것이 바람직
+# apply 계열 함수를 이용하면 다양한 반복문 작성 가능
+
+## apply()
+# matrix, data frame에서 행, 열단위의 작업을 쉽게 할 수 있게 한다.
+for (i in 1:4) {
+  mean(iris[,i])
+}
+
+apply(iris[,1:4], 2, mean) # col 방향으로 함수적용
+apply(iris[,1:4], 1, mean) # row 방향으로 함수적용
+
+## lapply()
+# apply()와 유사하나 결과가 list format이다.
+lapply(iris[,1:4], mean) # col 방향으로 함수적용됨
+
+### 5) 프로그래밍 예제
+# 화면에서 사용자 입력값 받기
+n <- readline(prompt="숫자를 입력하세요: ")
+cat("입력한 숫자는", n, "입니다. \n")
+
+## 숫자 맞추기 게임
+num <- round(runif(1) * 100, digits = 0)
+guess <- -1
+cat("Guess a number between 0 and 100.\n")
+
+while(guess != num){ 
+  guess <- readline(prompt="Guess number :")
+  guess <- as.integer(guess) 
+  if (guess == num) {
+    cat("Congratulations,", num, "is right.\n")
+  } else if (guess < num){
+    cat("It’s smaller!\n")
+  } else if(guess > num) {
+    cat("It’s bigger!\n")
+  }
+}
+
+############### 8. 데이터 시각화 ###############
+
+### 1) 나무지도
+# 나무지도는 데이터가 갖는 계층구조를 타일 모양으로 표현한 것
+# 타일은 계층적 속성을 가지며, 계층은 컬러로 표현된다.
+
+# 설치가 필요한 패키지 : treemap
+library(treemap)
+data(GNI2014)                # 데이터 불러오기 
+str(GNI2014)                 # 데이터 내용보기 
+treemap(GNI2014,
+        index=c("continent","iso3"),
+        vSize="population",  # 타일의 크기
+        vColor="GNI",        # 타일의 컬러
+        type="value",        # 타일 컬러링 방법
+        bg.labels="yellow")  # 레이블의 배경색 
+
+# 대륙별 인구, 소득 
+# 국가별 국민 총소득을 계산해서 GNI.total 컬럼에 저장
+GNI2014$GNI.total <-  
+  GNI2014$population*GNI2014$GNI 
+head(GNI2014)
+# 국가별 국민 총소득을 대륙별로 합계내서 GNI2014.a 에 저장 
+GNI2014.a <- aggregate(GNI2014[,4:6],
+                       by=list(GNI2014$continent),sum)
+# 대륙별 합계를 대륙 인구수로 나누어 GNI.percap 컬럼에 저장
+GNI2014.a$GNI.percap <- 
+  GNI2014.a$GNI.total/GNI2014.a$population
+
+treemap(GNI2014.a,
+        index=c("Group.1"),
+        vSize="population",
+        vColor="GNI.percap",
+        type="value",
+        bg.labels="yellow")
+
+### 2) 버블차트
+# 산점도는 두 개의 변수간 상관 관계를 표시
+# 버블 차트는 산점도에 제 3의 변수를 크기에 비례하는 원으로 표현한 그림
+
+# 설치가 필요한 패키지 : MASS
+library(MASS)
+head(UScrime)
+radius <- sqrt(UScrime$Pop) # 원의 반지름(값이커서 줄임)
+symbols(UScrime$U2, UScrime$y, # 원의 x,y 좌표값 
+        circles=radius,         # 원의 반지름값 
+        inches=0.4,             # 원의 크기 조절값
+        fg="white",             # 원의 테두리 색 
+        bg="lightgray",         # 원의 바탕색
+        lwd=1.5,                # 원의 테두리선 두께
+        xlab="unemployment 35-39 males", 
+        ylab="crime rate",
+        main="UScrime Data")
+text(UScrime$U2, UScrime$y,  # 텍스트가 출력될 x,y좌표
+     1:nrow(UScrime),         # 출력할 텍스트
+     cex=0.8,                 # 폰트 크기
+     col="brown")             # 폰트 color
 
 
+### 3) 다중상자그림
+# 상자 그림은 일변량 연속형 자료를 상자와 선, 그리고 점으로 표현한 그림
+# 다중 상자 그림은 총 자료가 여러 개의 자료 묶음 또는 그룹으로 구성되어 있는 경우 그룹 간 비교에 있어 시각적 효과가 탁월
+
+setwd("C:/Users/user/Desktop/Rworks") # 읽어 올 데이터 파일이 있는 폴더지정
+ds <- read.csv("seoul_temp_2017.csv")
+head(ds)
+summary(ds$avg_temp)
+
+# 서울 1년 기온 분포 
+boxplot(ds$avg_temp, 
+        col="yellow", 
+        ylim=c(-20,40), 
+        xlab="서울1년기온",
+        ylab="기온")
 
 
+# 월별 평균기온계산 
+month.avg <- aggregate(ds$avg_temp, 
+                       by=list(ds$month),median)[2]
+
+# 평균기온 순위 계산 (내림차순) 
+odr <- rank(-month.avg)
+
+# 월별 기온분포 
+boxplot(avg_temp~month, data=ds,  
+        col=heat.colors(12)[odr], # 상자의 색을 지정 
+        ylim=c(-20,40), 
+        ylab="기온",
+        xlab="월",
+        main="서울 월별기온분포 (2017)")
 
 
+### 4) 모자이크 플롯
+# 모자이크 플롯은 2원 3원 교차표의 시각화이다.
+# 전체 정사각 도형을 교차표의 행 빈도에 비례하는 직사각도형으로 나누고 다시 각 도형을 행 내 열의 빈도에 해당하는 직사각도형으로 나눈다.
+# matrix 형태로 데이터가 존재하는 경우
+hospital <- read.csv("C:/Users/user/Desktop/Rworks/hospital.csv")    
+head(hospital)
+table(hospital)
+mosaicplot(~freq+stay, data = hospital, color=TRUE, 
+           main ="병원내원빈도vs치료기간")
+
+mosaicplot (~freq+stay, data = hospital, 
+            color =  c("green","blue","red"),
+            main ="병원내원빈도vs치료기간")
+
+# 3차원 교차표 형태로 데이터가 존재하는 경우
+Titanic
+mosaicplot(Titanic, color = TRUE, off=5)
+
+mosaicplot(Titanic, 
+           main = "Survival on the Titanic", 
+           color = c("red","green"), 
+           off=1) # 블럭들 사이의 간격 지정 
+
+############### 9. 회귀 분석 ###############
+
+### 1) 단순 선형 회귀
+## 정의
+# 종속 변수(y)와 독립변수(x) 사이의 선형 관계를 파악하고 이를 예측에 활용하는 방법
+# 예) 기온(x) 과 아이스크림  판매량(y) 사이의 관계식을 찾아낸다. 
+# 이를 이용하여 내일의 예상 기온으로부터 예상 아이스크림 판매량을 예측한다.
+# => 필요한 아이스크림 재료의 양을 예측할 수 있다. 
+
+# 기온(x)과 아이스크림 판매량(y) 사이의 관계식을 모델(model) 이라고 한다. 
+# (회귀 모델, 예측 모델)
+
+# 단순 선형 회귀식은 다음과 같은 형태
+# Y = Wx + b
+
+# 두변수가 선형 관계에 있는지 알아보는 방법 : 산점도, 상관계수
+
+## R을 이용해 회귀 모델 구하기
+head(cars)
+plot(dist~speed, data=cars)
+
+model <- lm(dist~speed, cars)
+model
+
+coef(model)[1] # b
+coef(model)[2] # W
+
+# 완성된 모델 : dist = 3.932 x speed – 17.579
+
+speed <- cars[,1]
+pred <- 3.932 * speed - 17.579
+pred
+compare <- cbind(pred,cars[,2],abs(pred-cars[,2]))
+compare
+
+# 회귀식을 산점도에 표현
+plot(dist~speed, data=cars)
+abline(coef(model))
 
 
+### 2) 중선형 회귀
+## 정의 
+# Multiple linear regression
+# 독립변수가 2개 이상인 경우
+# 예) 키(x1) 와 몸무게(x2)를 가지고 혈당수치(y)를 를 예측
+# 독립변수 : 키, 몸무게
+# 종속 변수 : 혈당수치 
 
+# 중선형 회귀식의 형태
+# y = b0 + b1x1 + b2x2 + ... + bkxk + e
 
+## 사례 : 연봉 예측 모델
+library(car)
+head(Prestige)
 
+newdata <- Prestige[,c(1:4)]
+plot(newdata, pch=16, col="blue", 
+     main="Matrix Scatterplot")
 
+mod1 <- lm(income ~ education + prestige + 
+             women, data=newdata)
+summary(mod1)
 
+## 회귀식
+# income = -253.850 + 177.199 x education
+# + 141.435 x prestige 
+# - 50.896 x women 
 
+## 변수 선택
+# 독립변수들이 많을 때 그 중에서 종속변수를 잘 ㄹ설명할 수 있는 변수들만 선택
+library(MASS)
+newdata2 <- Prestige[,c(1:5)]
+head(newdata2)
+mod2 <- lm(income ~ education + prestige + 
+             women + census, data= newdata2)
+step <- stepAIC(mod2, direction="both")
 
+## 선택된 변수로 모델을 다시 생성
+newdata2 <- Prestige[,c(1:5)]
+head(newdata2)
+mod3 <- lm(income ~ prestige + women, 
+           data= newdata2)
+summary(mod3)
 
+### 3) 로지스틱 회귀
+# 일반적인 회귀 문제는 종속변수가 수치데이터
+# 예측해야 할 종속변수가 수치데이터가 아닌 범주형일때 로지스틱 회귀라고 한다.
+# 범주나 그룹을 예측하는 문제를 '분류'문제 라고 한다.
 
+head(iris)
+# 종속변수가 숫자형 이어야 함. 범주형 변수를 숫자로 변환
+mod3 <- glm(as.integer(Species) ~., data= iris)
+summary(mod3)
 
+pred <- 1.18650 + 5.1*(-0.11191)+
+  3.5*(-0.04008)+
+  1.4*0.22865+
+  0.2*0.60925  
+pred
 
+unknown <- data.frame(rbind(c(5.1, 3.5, 1.4, 0.2)))
+names(unknown) <- names(iris)[1:4]
+unknown
+mod3
 
+pred <- predict(mod3, unknown) 
+pred
 
+test <- iris[,1:4]
+pred <- predict(mod3, test) 
+pred
+pred <- round(pred,0) # find nearest integer
+pred
 
+pred == as.integer(iris[,5]) 
+acc <- mean(pred == as.integer(iris[,5]))
+acc
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+class(iris$Species)
+iris$Species
+as.integer(iris$Species)
