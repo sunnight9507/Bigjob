@@ -12,3 +12,8 @@
 - **온라인 사전교육**
   - [데이터의 가치와 분석](http://cyber.dbguide.net/lecture.php?action=view&no=169)
   - [R기초 교육](http://cyber.dbguide.net/lecture.php?action=view&no=168)
+
+
+#### 3주차
+
+- **고급 Python**
