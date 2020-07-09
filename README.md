@@ -17,3 +17,7 @@
 #### 3주차
 
 - **고급 Python**
+  - 자료구조, 디버깅
+  - 함수적 기법
+  - 객체 지향
+  - 과제 : [Python tutorial](https://github.com/sunnight9507/Bigjob/tree/master/3%EC%A3%BC%EC%B0%A8/Python%20tutorial)
