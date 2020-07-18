@@ -20,4 +20,14 @@
   - 자료구조, 디버깅
   - 함수적 기법
   - 객체 지향
+  - Testing
   - 과제 : [Python tutorial](https://github.com/sunnight9507/Bigjob/tree/master/3%EC%A3%BC%EC%B0%A8/Python%20tutorial)
+  
+#### 4주차
+
+- **빅데이터 수집**
+  - 정형데이터(RDBMS, SQL, ORM)
+  - 반정형데이터(HTML, CSS, XML, JSON)
+  - 비정형데이터
+  - Crawling
+  - Git 특강
