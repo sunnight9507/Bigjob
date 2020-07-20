@@ -12,8 +12,7 @@
 - **온라인 사전교육**
   - [데이터의 가치와 분석](http://cyber.dbguide.net/lecture.php?action=view&no=169)
   - [R기초 교육](http://cyber.dbguide.net/lecture.php?action=view&no=168)
-
-
+  
 #### 3주차
 
 - **고급 Python**
@@ -22,6 +21,8 @@
   - 객체 지향
   - Testing
   - 과제 : [Python tutorial](https://github.com/sunnight9507/Bigjob/tree/master/3%EC%A3%BC%EC%B0%A8/Python%20tutorial)
+- **Project**
+  - 아이디어 회의
   
 #### 4주차
 
@@ -31,3 +32,6 @@
   - 비정형데이터
   - Crawling
   - Git 특강
+- **Project**
+  - 아이디어 회의
+  - 팀별 발표(변리사 & 학생 피드백)
