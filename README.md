@@ -40,6 +40,8 @@
 
 - **빅데이터 수집(온라인)**
   - Crawling
+  - Scraping
+  - 정규식
 - **Project**
   - 환경 구축
   - 데이터 
