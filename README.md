@@ -42,6 +42,7 @@
   - Crawling
   - Scraping
   - 정규식
+  - NLP(Natural Language Processing)
 - **Project**
   - 환경 구축
   - 데이터 
