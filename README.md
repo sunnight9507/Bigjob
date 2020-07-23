@@ -46,4 +46,4 @@
 - **Project**
   - 환경 구축
   - 데이터 수집
-    - [종합유기견보호센터](http://www.zooseyo.or.kr/zooseyo_or_kr.html?) : 유 동물(공고 & 보호중)
+    - [종합유기견보호센터](http://www.zooseyo.or.kr/zooseyo_or_kr.html?) : 유기 동물(공고 & 보호중)
