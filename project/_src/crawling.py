@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup
+import pymysql
 import requests
 import re
 
@@ -54,12 +55,34 @@ def protect_animals_url1_scraping(urllist):
 
         for i in range(0, len(tmp), 2):
             data[tmp[i].text.strip()] = tmp[i + 1].text.strip()
+        data['나이'] = data['나이/체중'][:4]
+        data['체중'] = data['나이/체중'][11:]
+        del data['나이/체중']
         data['image'] = dom.select_one('img')['src']
 
         result.append(data)
 
     print('-' * 10, ' protect_url1 Scraping end  ', '-' * 10)
     return result
+def protect_animals_url1_to_DB(data):
+    '''
+    protect_url1_result to DB
+    :param data:
+    :return:
+    '''
+    print('-' * 10, ' protect_url1 to_database start  ', '-' * 10)
+    # DB connect
+    conn = pymysql.connect(host='localhost', user='root', password='1234',
+                           db='project', charset='utf8')
+    curs = conn.cursor()
+
+    sql = '''INSERT INTO protect_animals_url1(number, kind, color, sex, neutralization, date, location, characteristic, deadline, age, weight, image)
+            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'''
+
+    # insert data
+    [curs.execute(sql, (tuple(_.values()))) for _ in data]
+    conn.commit()
+    print('-' * 10, ' protect_url1 to_database end  ', '-' * 10)
 def protect_animals_url1(page):
     '''
     동물보호관리시스템 유기동물 공고의 데이터 수집
@@ -80,6 +103,8 @@ def protect_animals_url1(page):
     # protect_url1_result to DB
     [print(_) for _ in protect_animals_url1_result]
     print('protect_animals_url1에서 가지고 온 data 갯수 : ', len(protect_animals_url1_result))
+
+    protect_animals_url1_to_DB(protect_animals_url1_result)
 
 def protect_animals_url2_find_no(dom):
     '''
@@ -103,6 +128,7 @@ def protect_animals_url2_scraping(no, n):
     :param n: 수집할 데이터 수
     :return: dict 형태의 data
     '''
+    print('-' * 10, ' protect_url2 Scraping start  ', '-' * 10)
     # no부터 n번 돌면서 각 정보 Scraping
     result = []
     url = 'http://www.zooseyo.or.kr/Yu_board/petcare_view.html'
@@ -117,8 +143,8 @@ def protect_animals_url2_scraping(no, n):
 
             data['no'] = num
             data['name'], data['date'], data['phone_num'], data['sex'], data['address'] = text[0], text[1], text[2], text[3], text[4] + ' ' + text[5]
-            data['image'] = ['http://www.zooseyo.or.kr' + _ for _ in
-                             set(re.findall(r'\/pet_care\/photo\/[0-9_]+.jpe?g', resp.text))]
+            data['image'] = str(['http://www.zooseyo.or.kr' + _ for _ in
+                             set(re.findall(r'\/pet_care\/photo\/[0-9_]+.jpe?g', resp.text))])
 
             text = dom.select('p')
 
@@ -127,7 +153,27 @@ def protect_animals_url2_scraping(no, n):
             # print(dom.select('p > br')[1].text.strip(), dom.select('p > br')[0].text.strip())
             result.append(data)
 
+    print('-' * 10, ' protect_url2 Scraping end  ', '-' * 10)
     return result
+def protect_animals_url2_to_DB(data):
+    '''
+    protect_url2_result to DB
+    :param data:
+    :return:
+    '''
+    print('-' * 10, ' protect_url2 to_database start  ', '-' * 10)
+    # DB connect
+    conn = pymysql.connect(host='localhost', user='root', password='1234',
+                           db='project', charset='utf8')
+    curs = conn.cursor()
+
+    sql = '''INSERT INTO protect_animals_url2(number, name, date, phone_num, sex, address, image, characteristic)
+            VALUES (%s,%s,%s,%s,%s,%s,%s,%s)'''
+
+    # insert data
+    [curs.execute(sql, (tuple(_.values()))) for _ in data]
+    conn.commit()
+    print('-' * 10, ' protect_url2 to_database end  ', '-' * 10)
 def protect_animals_url2(n):
     '''
     유기견보호센터 유기동물 보호중의 데이터 수집
@@ -152,6 +198,8 @@ def protect_animals_url2(n):
     [print(_) for _ in protect_animals_url2_result]
     print('protect_animals_url2에서 가지고 온 data 갯수 : ', len(protect_animals_url2_result))
 
+    protect_animals_url2_to_DB(protect_animals_url2_result)
+
 def missing_animals_url3_find_no(dom):
     '''
     동물보호관리시스템 실종동물 공고에 가장 최근에 올라온 게시글의 'no' 찾는 함수
@@ -162,7 +210,7 @@ def missing_animals_url3_find_no(dom):
     text = dom.find('table', {'background': '../images/board/main-search-img-frame-01.gif'})
     # print(re.findall(r'petfind_view_skin_1.html\?no=[0-9]+', str(text)))
 
-    no = int(re.findall(r'petfind_view_skin_2.html\?no=([0-9]+)', str(text))[0])
+    no = int(re.findall(r'petfind_view_skin_[12].html\?no=([0-9]+)', str(text))[0])
     return no
 def missing_animals_url3_scraping(no, n):
     '''
@@ -171,6 +219,7 @@ def missing_animals_url3_scraping(no, n):
     :param n: 수집할 데이터 수
     :return: dict 형태의 data
     '''
+    print('-' * 10, ' missing_url3 Scraping start  ', '-' * 10)
     # no부터 n번 돌면서 각 정보 Scraping
     result = []
     url = 'http://www.zooseyo.or.kr/Yu_board/petfind_view_skin_1.html'
@@ -190,15 +239,35 @@ def missing_animals_url3_scraping(no, n):
             data['address'] = text[1].text
             data['date'] = text[2].text
             data['sex'] = text[5].text.strip()
-            data['image'] = ['http://www.zooseyo.or.kr' + _ for _ in
-                             set(re.findall(r'\/pet_care\/photo\/[0-9_]+.jpe?g', resp.text))]
+            data['image'] = str(['http://www.zooseyo.or.kr' + _ for _ in
+                             set(re.findall(r'\/pet_care\/photo\/[0-9_]+.jpe?g', resp.text))])
             data['text'] = text[6].text.strip().replace('\r\n',' ')
 
 
 
             result.append(data)
 
+    print('-' * 10, ' missing_url3 Scraping end  ', '-' * 10)
     return result
+def missing_animals_url3_to_DB(data):
+    '''
+    missing_animals_url3 to DB
+    :param data:
+    :return:
+    '''
+    print('-' * 10, ' missing_animals_url3 to_database start  ', '-' * 10)
+    # DB connect
+    conn = pymysql.connect(host='localhost', user='root', password='1234',
+                           db='project', charset='utf8')
+    curs = conn.cursor()
+
+    sql = '''INSERT INTO missing_animals_url3(number, phone_num, address, date, sex, image, characteristic)
+            VALUES (%s,%s,%s,%s,%s,%s,%s)'''
+
+    # insert data
+    [curs.execute(sql, (tuple(_.values()))) for _ in data]
+    conn.commit()
+    print('-' * 10, ' missing_animals_url3 to_database end  ', '-' * 10)
 def missing_animals_url3(n):
     '''
     유기견보호센터 실종동물 데이터 수집
@@ -226,13 +295,14 @@ def missing_animals_url3(n):
     [print(_) for _ in missing_animals_url3_result]
     print('missing_animals_url3에서 가지고 온 data 갯수 : ', len(missing_animals_url3_result))
 
-if __name__ == '__main__':
+    missing_animals_url3_to_DB(missing_animals_url3_result)
 
+if __name__ == '__main__':
     # '동물보호관리시스템 유기동물 공고' url의 데이터 수집
     protect_animals_url1(page = 3)
 
-    # '유기견보호센터 유기동물 보호중' url의 데이터 수집
-    protect_animals_url2(30)
-
-    # '유기견보호센터 실종동물' url의 데이터 수집
-    missing_animals_url3(30)
+    # # '유기견보호센터 유기동물 보호중' url의 데이터 수집
+    # protect_animals_url2(30)
+    #
+    # # '유기견보호센터 실종동물' url의 데이터 수집
+    # missing_animals_url3(30)
