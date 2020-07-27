@@ -2,7 +2,6 @@ from bs4 import BeautifulSoup
 import requests
 import re
 
-
 def download(url, params={}, method='GET', headers={'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36'}):
     '''
     url crawling
@@ -20,7 +19,7 @@ def download(url, params={}, method='GET', headers={'user-agent': 'Mozilla/5.0 (
 
     return resp
 
-def protect_url1_to_urllist(url, page_range):
+def protect_animals_url1_to_urllist(url, page_range):
     '''
     동물보호관리시스템 유기동물 공고에서 page range만큼 url crawling
     :param url: Crawling할 첫 page
@@ -36,7 +35,7 @@ def protect_url1_to_urllist(url, page_range):
 
     print('-' * 10, ' protect_url1 Crawling end  ', '-' * 10)
     return urllist
-def protect_url1_scraping(urllist):
+def protect_animals_url1_scraping(urllist):
     '''
     image & 필요한 정보 scraping
     :param urllist: Scraping 할 urllist
@@ -61,7 +60,7 @@ def protect_url1_scraping(urllist):
 
     print('-' * 10, ' protect_url1 Scraping end  ', '-' * 10)
     return result
-def protect_url1(page):
+def protect_animals_url1(page):
     '''
     동물보호관리시스템 유기동물 공고의 데이터 수집
     :param page: 원하는 페이지 수
@@ -72,17 +71,17 @@ def protect_url1(page):
     page_range = range(page)
 
     # url crawling
-    protect_url1_list = protect_url1_to_urllist(protect_url1, page_range)
+    protect_url1_list = protect_animals_url1_to_urllist(protect_url1, page_range)
     #     print([print(_) for _ in protect_url1_list])
 
     # urllist scraping
-    protect_url1_result = protect_url1_scraping(protect_url1_list)
+    protect_animals_url1_result = protect_animals_url1_scraping(protect_url1_list)
 
     # protect_url1_result to DB
-    print('protect_url1에서 가지고 온 data 갯수 : ', len(protect_url1_result))
-    # print([print(_) for _ in protect_url1_result])
+    [print(_) for _ in protect_animals_url1_result]
+    print('protect_animals_url1에서 가지고 온 data 갯수 : ', len(protect_animals_url1_result))
 
-def protect_url2_find_no(dom):
+def protect_animals_url2_find_no(dom):
     '''
     동물보호관리시스템 유기동물 공고에 가장 최근에 올라온 게시글의 'no' 찾는 함수
     :param dom: 
@@ -97,7 +96,7 @@ def protect_url2_find_no(dom):
             break
             
     return no
-def protect_url2_scraping(no, n):
+def protect_animals_url2_scraping(no, n):
     '''
     최근 게시물부터 n개 scraping
     :param no: 최근 게시물 number
@@ -116,30 +115,26 @@ def protect_url2_scraping(no, n):
         if not re.findall(r'pet_find_phoneblind_img', resp.text):
             text = dom.select('td')[63].text.split()
 
-            # print(text)
-            name, date, phone_num, sex, address = text[0], text[1], text[2], text[3], text[4] + ' ' + text[5]
-
-            image = ['http://www.zooseyo.or.kr' + _ for _ in
-                     set(re.findall(r'\/pet_care\/photo\/[0-9_]+.jpe?g', resp.text))]
-            # print('{}, {}, {}, {}, {}, {}, {}'.format(num, name, date, phone_num, sex, address, image))
-
             data['no'] = num
-            data['name'] = name
-            data['date'] = date
-            data['phone_num'] = phone_num
-            data['sex'] = sex
-            data['address'] = address
-            data['image'] = image
+            data['name'], data['date'], data['phone_num'], data['sex'], data['address'] = text[0], text[1], text[2], text[3], text[4] + ' ' + text[5]
+            data['image'] = ['http://www.zooseyo.or.kr' + _ for _ in
+                             set(re.findall(r'\/pet_care\/photo\/[0-9_]+.jpe?g', resp.text))]
+
+            text = dom.select('p')
+
+            data['text'] = text[0].text.strip()
+
+            # print(dom.select('p > br')[1].text.strip(), dom.select('p > br')[0].text.strip())
             result.append(data)
 
     return result
-def protect_url2(n):
+def protect_animals_url2(n):
     '''
     유기견보호센터 유기동물 보호중의 데이터 수집
     :param n: 수집할 데이터 수
     :return:
     '''
-    print('-' * 10, ' protect_url2 Crawling start ', '-' * 10)
+    print('-' * 10, ' protect_animals_url2 Crawling start ', '-' * 10)
     # 유기견보호센터 유기동물 보호중
     protect_url2 = 'http://www.zooseyo.or.kr/Yu_board/petcare.html'
 
@@ -147,20 +142,97 @@ def protect_url2(n):
     dom = BeautifulSoup(resp.text, 'html.parser')
 
     # find 최근 게시글 no
-    no = protect_url2_find_no(dom)
+    no = protect_animals_url2_find_no(dom)
 
     # 최근 게시글부터 n개 Scraping
-    protect_url2_result = protect_url2_scraping(no, n)
+    protect_animals_url2_result = protect_animals_url2_scraping(no, n)
 
-    print('-' * 10, ' protect_url2 Crawling end ', '-' * 10)
+    print('-' * 10, ' protect_animals_url2 Crawling end ', '-' * 10)
     # to DB
-    print('protect_url2에서 가지고 온 data 갯수 : ', len(protect_url2_result))
+    [print(_) for _ in protect_animals_url2_result]
+    print('protect_animals_url2에서 가지고 온 data 갯수 : ', len(protect_animals_url2_result))
+
+def missing_animals_url3_find_no(dom):
+    '''
+    동물보호관리시스템 실종동물 공고에 가장 최근에 올라온 게시글의 'no' 찾는 함수
+    :param dom:
+    :return: 최근 게시글 번호
+    '''
+    # find 최근 no
+    text = dom.find('table', {'background': '../images/board/main-search-img-frame-01.gif'})
+    # print(re.findall(r'petfind_view_skin_1.html\?no=[0-9]+', str(text)))
+
+    no = int(re.findall(r'petfind_view_skin_2.html\?no=([0-9]+)', str(text))[0])
+    return no
+def missing_animals_url3_scraping(no, n):
+    '''
+    최근 게시물부터 n개 scraping
+    :param no: 최근 게시물 number
+    :param n: 수집할 데이터 수
+    :return: dict 형태의 data
+    '''
+    # no부터 n번 돌면서 각 정보 Scraping
+    result = []
+    url = 'http://www.zooseyo.or.kr/Yu_board/petfind_view_skin_1.html'
+
+
+    for num in range(no, no - n, -1):
+        resp = download(url=url, params={'no': num}, method='GET')
+        dom = BeautifulSoup(resp.text, 'html.parser')
+
+        data = dict()
+        # 찾은 동물은 pass
+        if not re.findall(r'감사합니다\. 찾았어요\!', resp.text):
+            text = dom.select('b')
+
+            data['no'] = num
+            data['phone_num'] = '-'.join(re.findall(r'[0-9]{3,4}',text[0].text))
+            data['address'] = text[1].text
+            data['date'] = text[2].text
+            data['sex'] = text[5].text.strip()
+            data['image'] = ['http://www.zooseyo.or.kr' + _ for _ in
+                             set(re.findall(r'\/pet_care\/photo\/[0-9_]+.jpe?g', resp.text))]
+            data['text'] = text[6].text.strip().replace('\r\n',' ')
+
+
+
+            result.append(data)
+
+    return result
+def missing_animals_url3(n):
+    '''
+    유기견보호센터 실종동물 데이터 수집
+    :param n: 수집할 데이터 수
+    :return:
+    '''
+    print('-' * 10, ' missing_animals_url3 Crawling start ', '-' * 10)
+    # 유기견보호센터 실종동물 찾는 url
+    protect_url2 = 'http://www.zooseyo.or.kr/Yu_board/petfind.html'
+
+    resp = download(url=protect_url2,params={'page': 1}, method='GET')
+    dom = BeautifulSoup(resp.text, 'html.parser')
+
+    # find 최근 게시글 no
+    no = missing_animals_url3_find_no(dom)
+
+    # 최근 게시글부터 n개 Scraping
+    missing_animals_url3_result = missing_animals_url3_scraping(no, n)
+
+
+    # protect_url2_result = missing_animals_url3_scraping(no, n)
+    #
+    print('-' * 10, ' missing_animals_url3 Crawling end ', '-' * 10)
+    # to DB
+    [print(_) for _ in missing_animals_url3_result]
+    print('missing_animals_url3에서 가지고 온 data 갯수 : ', len(missing_animals_url3_result))
 
 if __name__ == '__main__':
-    #     robot = RobotFileParser()
 
     # '동물보호관리시스템 유기동물 공고' url의 데이터 수집
-    protect_url1(page = 3)
+    protect_animals_url1(page = 3)
 
     # '유기견보호센터 유기동물 보호중' url의 데이터 수집
-    protect_url2(30)
+    protect_animals_url2(30)
+
+    # '유기견보호센터 실종동물' url의 데이터 수집
+    missing_animals_url3(30)
