@@ -2,6 +2,11 @@ from bs4 import BeautifulSoup
 import pymysql
 import requests
 import re
+from datetime import datetime
+
+# DB connect
+conn = pymysql.connect(host='localhost', user='root', password='1234',
+                   db='project', charset='utf8')
 
 def download(url, params={}, method='GET', headers={'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36'}):
     '''
@@ -36,6 +41,21 @@ def protect_animals_url1_to_urllist(url, page_range):
 
     print('-' * 10, ' protect_url1 Crawling end  ', '-' * 10)
     return urllist
+def protect_animals_url1_check_data_existence(data):
+    '''
+    해당 data 유무 check
+    :param data:
+    :return: 데이터 유무 : 1 or 0
+    '''
+    curs = conn.cursor()
+    # 수정 해야됨
+    sql = 'SELECT count(*) from protect_animals_url1 where number like "' + data['공고번호'] + '"'
+
+    # insert data
+    curs.execute(sql)
+
+    rows = curs.fetchall()
+    return rows[0][0]
 def protect_animals_url1_scraping(urllist):
     '''
     image & 필요한 정보 scraping
@@ -58,7 +78,20 @@ def protect_animals_url1_scraping(urllist):
         data['나이'] = data['나이/체중'][:4]
         data['체중'] = data['나이/체중'][11:]
         del data['나이/체중']
+
+        # DB에 data 유무 확인
+        if protect_animals_url1_check_data_existence(data):
+            break
+
+        tmp = dom.select('strong')
+        data['보호센터이름'] = tmp[0].text
+        data['보호센터전화번호'] = tmp[1].text
+        data['보호장소'] = tmp[2].text
+
         data['image'] = dom.select_one('img')['src']
+
+        data['url'] = url
+        data['time'] = datetime.now()
 
         result.append(data)
 
@@ -72,12 +105,10 @@ def protect_animals_url1_to_DB(data):
     '''
     print('-' * 10, ' protect_url1 to_database start  ', '-' * 10)
     # DB connect
-    conn = pymysql.connect(host='localhost', user='root', password='1234',
-                           db='project', charset='utf8')
     curs = conn.cursor()
 
-    sql = '''INSERT INTO protect_animals_url1(number, kind, color, sex, neutralization, date, location, characteristic, deadline, age, weight, image)
-            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'''
+    sql = '''INSERT INTO protect_animals_url1(number, kind, color, sex, neutralization, date, location, characteristic, deadline, age, weight, center_name, center_number, center_address, image, url, time)
+            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'''
 
     # insert data
     [curs.execute(sql, (tuple(_.values()))) for _ in data]
@@ -299,10 +330,10 @@ def missing_animals_url3(n):
 
 if __name__ == '__main__':
     # '동물보호관리시스템 유기동물 공고' url의 데이터 수집
-    protect_animals_url1(page = 3)
+    protect_animals_url1(page = 10)
 
     # # '유기견보호센터 유기동물 보호중' url의 데이터 수집
     # protect_animals_url2(30)
-    #
+
     # # '유기견보호센터 실종동물' url의 데이터 수집
     # missing_animals_url3(30)
