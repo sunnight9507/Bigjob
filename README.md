@@ -57,4 +57,13 @@
   - Scikit-learn
   - Recommendation
 - **Project**
-  - 
+  - 수집된 데이터 EDA
+  
+#### 7주차
+
+- **빅데이터 분석(딥러닝)**
+  - 자연어 처리
+  - Tensorflow / Keras
+  - 딥러닝 이론(RNN, LSTM, GRU, CNN, Attention, Transformer)
+- **Project**
+  - 개 품종 분류 및 결과 EDA
