@@ -67,3 +67,9 @@
   - 딥러닝 이론(RNN, LSTM, GRU, CNN, Attention, Transformer)
 - **Project**
   - 개 품종 분류 및 결과 EDA
+  
+  #### 8주차
+
+- **빅데이터 활용(지식정보 시스템 개발)**
+  - Flask
+  - 시계열 / 위치 기반 분석
