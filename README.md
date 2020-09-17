@@ -5,7 +5,7 @@
   - 기계학습/딥러닝 기법을 활용한 빅데이터 분석
   - 분석을 바탕으로 지능정보 시스템 개발
 
-## [Main Project](https://github.com/sunnight9507/Bigjob/tree/master/project)
+## [Main Project](https://github.com/Bigjob-team-12/Project)
 - 프로젝트 명 : 찾아주 Cat! :cat: Dog! :dog:
 - 진행 기간: 2020.07 ~ 2020.08
 
